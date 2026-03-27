@@ -182,7 +182,7 @@
   var previewRemove = document.getElementById('ai-preview-remove');
 
   var chatHistory = [];
-  var pendingImage = null; // { base64: string, name: string }
+  var pendingImage = null;
 
   function showImagePreview(dataUrl) {
     pendingImage = dataUrl;
@@ -262,7 +262,6 @@
     if (el) el.parentNode.removeChild(el);
   }
 
-  // 图片压缩：限制宽高 + 质量
   function compressImage(file, maxW, maxH, quality, callback) {
     var reader = new FileReader();
     reader.onload = function (e) {
@@ -288,7 +287,6 @@
     reader.readAsDataURL(file);
   }
 
-  // 上传图片 — 预览 + 暂存
   if (imageInput) {
     imageInput.addEventListener('change', function (e) {
       var file = e.target.files && e.target.files[0];
@@ -301,22 +299,15 @@
     });
   }
 
-  // 移除预览图片
   if (previewRemove) {
     previewRemove.addEventListener('click', function () {
       hideImagePreview();
     });
   }
 
+  // 已改为你的自定义域名
   function getAiChatUrl() {
-    if (typeof location === 'undefined') return 'http://127.0.0.1:3000/api/chat';
-    if (location.protocol === 'file:') return 'http://127.0.0.1:3000/api/chat';
-    var port = location.port || '';
-    var host = location.hostname || '';
-    if ((host === 'localhost' || host === '127.0.0.1') && port === '3000') {
-      return location.origin + '/api/chat';
-    }
-    return 'http://127.0.0.1:3000/api/chat';
+    return "https://xinyuzhilv.xzy/api/chat";
   }
 
   function callAiApi() {
@@ -342,7 +333,7 @@
       })
       .catch(function (err) {
         console.error('API 请求失败:', err);
-        return '无法连接 AI 服务。请先在项目里启动后端：打开终端进入 server 文件夹，运行 node server.js，然后用 http://127.0.0.1:3000 打开网站；若用 HBuilderX 预览(如 8848 端口)，也必须保持 node server.js 在运行。';
+        return '无法连接 AI 服务。';
       });
   }
 
@@ -350,12 +341,10 @@
     aiForm.addEventListener('submit', function (e) {
       e.preventDefault();
       var question = (aiInput.value || '').trim();
-      // 有图片或文字才发送
       if (!question && !pendingImage) return;
 
       var sentImage = pendingImage;
 
-      // 显示用户消息
       if (sentImage) {
         appendImageMessage(sentImage);
       }
@@ -363,11 +352,9 @@
         appendMessage(true, question);
       }
 
-      // 构建消息体
       var userContent = question || '请描述这张图片里的内容';
       var msgPayload;
       if (sentImage) {
-        // 保持 base64 原样传入，后端负责剥离 data:image/...;base64, 前缀
         msgPayload = {
           role: 'user',
           content: [
@@ -382,7 +369,6 @@
 
       aiInput.value = '';
 
-      // 发送后立即收起底部预览整行（不等待接口返回）
       if (sentImage) {
         hideImagePreview();
       }
@@ -495,7 +481,7 @@
       return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 14a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4"/><path d="M8 18v2M12 17v3M16 18v2"/></svg>';
     }
     if (snow.indexOf(code) >= 0) {
-      return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="3"/></svg>';
+      return '<svg width="20" height="20" viewBox="0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="3"/></svg>';
     }
     if (code === 0 || code === 1) {
       return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg>';
