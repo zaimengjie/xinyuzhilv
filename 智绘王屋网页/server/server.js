@@ -28,8 +28,8 @@ app.use((req, res, next) => {
 // 图片 base64 可能比较大，放大 limit
 app.use(express.json({ limit: '10mb' }));
 
-// 静态文件（前端页面）
-app.use(express.static(path.join(__dirname, '..')));
+// 静态文件（前端页面）—— 🔥🔥🔥 这里我已经改好了！
+app.use(express.static(__dirname));
 
 // ==================== API 地址 ====================
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions';
